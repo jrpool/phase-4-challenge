@@ -14,6 +14,14 @@ function getAlbumsByID(albumID, cb) {
   _query('SELECT * FROM albums WHERE id = $1', [albumID], cb)
 }
 
+function getUsers(cb) {
+  _query('SELECT * FROM users', [], cb)
+}
+
+function getUsersByID(userID, cb) {
+  _query('SELECT * FROM users WHERE id = $1', [userID], cb)
+}
+
 function _query(sql, variables, cb) {
   console.log('QUERY ->', sql.replace(/[\n\s]+/g, ' '), variables)
 
@@ -32,4 +40,6 @@ function _query(sql, variables, cb) {
 module.exports = {
   getAlbums,
   getAlbumsByID,
+  getUsers,
+  getUsersByID
 }

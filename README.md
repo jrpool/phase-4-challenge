@@ -29,3 +29,21 @@ Use the following commands to set up and seed your database:
 1. Create PostgreSQL database `vinyl`: `$ npm run db:create`
 1. Set up database tables from `schema.sql`: `$ npm run db:schema`
 1. Load seed data from `albums.sql`: `$ npm run db:seed`
+
+## Implementation Notes
+
+This implementation is based on specifications of the Learners Guild Phase 4 Challenge. Per those specifications, this implementation does not adhere to the following practices:
+
+- Separation of routing functionality into files in a route directory.
+
+- Encryption of passwords.
+
+- Entry of duplicate password for confirmation.
+
+- Header and footer templates to avoid code repetition.
+
+- Exclusion of logic from routes.
+
+- Singular names of database tables.
+
+- Sessions that persist across server reloads.

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vinyl</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  <script type="text/javascript" src="/script.js"></script>
+</head>
+<body>
+
+  <h1>Vinyl: New Review</h1>
+
+  <h3><%= album.title %></h3>
+  <p><em>by <%= album.artist %></em></p>
+
+  <form method="post" action="/new-review" class="form">
+    <pre class="form-errors"></pre>
+    <label>
+      <span>Review:</span>
+      <textarea cols="50" rows="5" name="review" minlength="1" maxlength="250" required></textarea>
+    </label>
+    <input type="submit" value="Submit">
+  </form>
+
+</body>
+</html>

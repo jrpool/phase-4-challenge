@@ -5,7 +5,15 @@
 
   <h2>Reviews</h2>
 
-  <!-- TODO: implement album reviews -->
+  <div class="review-list">
+    <% reviewViews.forEach(function(reviewView) { %>
+      <div>
+        <p><%= reviewView.submission_date %></p>
+        <p><%= reviewView.review %></p>
+        <p>by <%= reviewView.author %></p>
+      </div>
+    <% }) %>
+  </div>
 
 </body>
 </html>

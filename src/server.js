@@ -59,7 +59,7 @@ const getStatusLinks = (req, hidables) => {
   }
 }
 
-const renderError = (error, req) => {
+const renderError = (error, req, res) => {
   res.status(500).render(
     'error', {error, statusLinks: getStatusLinks(req, [])}
   )
@@ -70,11 +70,11 @@ const renderError = (error, req) => {
 app.get('/', (req, res) => {
   db.getAlbums((error, albums) => {
     if (error) {
-      renderError(error, req)
+      renderError(error, req, res)
     } else {
       db.getReviewViews(3, (error, reviewViews) => {
         if (error) {
-          renderError(error, req)
+          renderError(error, req, res)
         }
         else {
           res.render(
@@ -108,12 +108,12 @@ app.get('/albums/:albumID(\\d+)', (req, res) => {
   const albumID = req.params.albumID
   db.getAlbumsByID(albumID, (error, albums) => {
     if (error) {
-      renderError(error, req)
+      renderError(error, req, res)
     }
     else if (albums.length) {
       db.getAlbumReviewViews(albumID, 0, (error, reviewViews) => {
         if (error) {
-          renderError(error, req)
+          renderError(error, req, res)
         }
         else {
           res.render(
@@ -136,7 +136,7 @@ app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const albumID = req.params.albumID
   db.getAlbumsByID(albumID, (error, albums) => {
     if (error) {
-      renderError(error, req)
+      renderError(error, req, res)
     } else {
       const album = albums[0]
       res.render(
@@ -151,18 +151,35 @@ app.get('/users/:userID(\\d+)', (req, res) => {
   const isOwnProfile = isUser(req) && userID === req.session.user.id
   db.getUsersByID(userID, (error, users) => {
     if (error) {
-      renderError(error, req)
-    } else {
-      const user = users[0]
-      // Suppress profile button if user’s own profile is being displayed.
-      res.render(
-        'user', {
-          user,
-          statusLinks: getStatusLinks(req, isOwnProfile ? ['profile'] : [])
+      renderError(error, req, res)
+    }
+    else if (users.length) {
+      db.getUserReviewViews(userID, 0, (error, reviewViews) => {
+        if (error) {
+          renderError(error, req, res)
         }
-      )
+        else {
+          // Suppress profile button if user’s own profile is being displayed.
+          res.render(
+            'user', {
+              user: users[0],
+              reviewViews,
+              statusLinks: getStatusLinks(req, isOwnProfile ? ['profile'] : [])
+            }
+          )
+        }
+      })
+    }
+    else {
+      res.redirect('/not-found')
     }
   })
+})
+
+app.get('/not-found', (req, res) => {
+  res.status(404).render(
+    'not-found', {message: '', statusLinks: getStatusLinks(req, [])}
+  )
 })
 
 app.post('/sign-in', (req, res) => {
@@ -176,7 +193,7 @@ app.post('/sign-in', (req, res) => {
   }
   db.getUser(formData.email, formData.password, (error, result_rows) => {
     if (error) {
-      renderError(error, req)
+      renderError(error, req, res)
     }
     else if (result_rows.length && result_rows[0].id) {
       const user = result_rows[0]
@@ -203,7 +220,7 @@ app.post('/sign-up', (req, res) => {
   }
   db.isEmailNew(formData.email, (error, result_rows) => {
     if (error) {
-      renderError(error, req)
+      renderError(error, req, res)
     }
     else if (result_rows.length && result_rows[0].answer) {
       db.createUser(
@@ -212,7 +229,7 @@ app.post('/sign-up', (req, res) => {
         formData.password,
         (error, result_rows) => {
           if (error) {
-            renderError(error, req);
+            renderError(error, req, res);
           }
           else {
             const id = result_rows[0].id
@@ -234,7 +251,7 @@ app.post('/sign-up', (req, res) => {
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
   if (!isUser(req) || !formData.review) {
-    renderError(error, req)
+    renderError(error, req, res)
   }
   else  {
     db.createReview(
@@ -243,7 +260,7 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
       formData.review,
       (error, result_rows) => {
         if (error) {
-          renderError(error, req)
+          renderError(error, req, res)
         }
         else {
           res.redirect(`/albums/${req.params.albumID}`)
@@ -256,9 +273,7 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
 // ##################### ROUTES END #####################
 
 app.use((req, res) => {
-  res.status(404).render(
-    'not-found', {statusLinks: getStatusLinks(req, [])}
-  )
+  res.redirect('/not-found')
 })
 
 app.listen(port, () => {

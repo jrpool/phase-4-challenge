@@ -1,3 +1,5 @@
+TRUNCATE albums;
+
 INSERT INTO
   albums (title, artist)
 VALUES

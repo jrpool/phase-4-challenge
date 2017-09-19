@@ -32,7 +32,7 @@ function createUser(name, email, password, cb) {
   _query(
     'INSERT INTO users (name, email, password) '
     + 'VALUES ($1, $2, $3) RETURNING id',
-    [user.name, user.email, user.password],
+    [name, email, password],
     cb
   );
 };
@@ -53,6 +53,7 @@ function _query(sql, variables, cb) {
 }
 
 module.exports = {
+  createUser,
   getAlbums,
   getAlbumsByID,
   getUsers,

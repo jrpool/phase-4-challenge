@@ -89,21 +89,21 @@ app.post('/sign-up', (req, res) => {
     res.render('sign-up', {message: messages.missing3Credentials})
     return
   }
-  db.isEmailNew(formData.email, (error, result.rows) => {
+  db.isEmailNew(formData.email, (error, result_rows) => {
     if (error) {
       res.status(500).render('error', {error})
     }
-    else if (result.rows[0].answer) {
+    else if (result_rows[0].answer) {
       db.createUser(
         formData.name,
         formData.email,
         formData.password,
-        (error, result.rows) => {
+        (error, result_rows) => {
           if (error) {
             res.status(500).render('error', {error})
           }
           else {
-            res.redirect('/users/' + result.rows[0].id)
+            res.redirect('/users/' + result_rows[0].id)
           }
         }
       )

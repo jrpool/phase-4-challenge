@@ -22,6 +22,21 @@ function getUsersByID(userID, cb) {
   _query('SELECT * FROM users WHERE id = $1', [userID], cb)
 }
 
+function isEmailNew(email, cb) {
+  _query(
+    'SELECT COUNT(id) = 0 AS answer FROM users WHERE email = $1', [email], cb
+  )
+}
+
+function createUser(name, email, password, cb) {
+  _query(
+    'INSERT INTO users (name, email, password) '
+    + 'VALUES ($1, $2, $3) RETURNING id',
+    [user.name, user.email, user.password],
+    cb
+  );
+};
+
 function _query(sql, variables, cb) {
   console.log('QUERY ->', sql.replace(/[\n\s]+/g, ' '), variables)
 
@@ -41,5 +56,6 @@ module.exports = {
   getAlbums,
   getAlbumsByID,
   getUsers,
-  getUsersByID
+  getUsersByID,
+  isEmailNew
 }

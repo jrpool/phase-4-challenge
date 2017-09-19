@@ -84,31 +84,35 @@ app.get('/users/:userID(\\d+)', (req, res) => {
 })
 
 app.post('/sign-up', (req, res) => {
-  const formData = req.body;
+  const formData = req.body
   if (!formData.name || !formData.email || !formData.password) {
-    res.render('sign-up', {message: messages.missing3Credentials});
-    return;
+    res.render('sign-up', {message: messages.missing3Credentials})
+    return
   }
-  // DbUsers.checkUser(formData)
-  // .then(user => {
-  //   if (user !== null) {
-  //     renderMessage('alreadyUser', response);
-  //     return '';
-  //   }
-  //   else {
-  //     const userPromise = DbUsers.createUser(formData);
-  //     const contactsPromise = DbContacts.getContacts();
-  //     Promise.all([userPromise, contactsPromise])
-  //     .then(valueArray => {
-  //       request.session.user = {
-  //         username: valueArray[0].username, admin: valueArray[0].admin
-  //       };
-        response.redirect('/');
-  //     });
-  //   }
-  // })
-  // .catch(error => renderError(error, request, response));
-});
+  db.isEmailNew(formData.email, (error, result.rows) => {
+    if (error) {
+      res.status(500).render('error', {error})
+    }
+    else if (result.rows[0].answer) {
+      db.createUser(
+        formData.name,
+        formData.email,
+        formData.password,
+        (error, result.rows) => {
+          if (error) {
+            res.status(500).render('error', {error})
+          }
+          else {
+            res.redirect('/users/' + result.rows[0].id)
+          }
+        }
+      )
+    }
+    else {
+      res.render('sign-up', {message: messages.alreadyUser})
+    }
+  })
+})
 
 // ##################### ROUTES END #####################
 

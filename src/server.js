@@ -70,11 +70,11 @@ const renderError = (error, req) => {
 app.get('/', (req, res) => {
   db.getAlbums((error, albums) => {
     if (error) {
-      renderError(error, req);
+      renderError(error, req)
     } else {
       db.getReviewViews(3, (error, reviewViews) => {
         if (error) {
-          renderError(error, req);
+          renderError(error, req)
         }
         else {
           res.render(
@@ -100,7 +100,7 @@ app.get('/sign-in', (req, res) => {
 })
 
 app.get('/sign-out', (req, res) => {
-  delete req.session.user;
+  delete req.session.user
   res.redirect('/')
 })
 
@@ -108,15 +108,26 @@ app.get('/albums/:albumID(\\d+)', (req, res) => {
   const albumID = req.params.albumID
   db.getAlbumsByID(albumID, (error, albums) => {
     if (error) {
-      renderError(error, req);
+      renderError(error, req)
     }
     else if (albums.length) {
-      res.render(
-        'album', {album: albums[0], statusLinks: getStatusLinks(req, [])}
-      )
+      db.getAlbumReviewViews(albumID, 0, (error, reviewViews) => {
+        if (error) {
+          renderError(error, req)
+        }
+        else {
+          res.render(
+            'album', {
+              album: albums[0],
+              reviewViews,
+              statusLinks: getStatusLinks(req, [])
+            }
+          )
+        }
+      })
     }
     else {
-      res.redirect('not-found');
+      res.redirect('/not-found')
     }
   })
 })
@@ -125,7 +136,7 @@ app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const albumID = req.params.albumID
   db.getAlbumsByID(albumID, (error, albums) => {
     if (error) {
-      renderError(error, req);
+      renderError(error, req)
     } else {
       const album = albums[0]
       res.render(
@@ -140,7 +151,7 @@ app.get('/users/:userID(\\d+)', (req, res) => {
   const isOwnProfile = isUser(req) && userID === req.session.user.id
   db.getUsersByID(userID, (error, users) => {
     if (error) {
-      renderError(error, req);
+      renderError(error, req)
     } else {
       const user = users[0]
       // Suppress profile button if user’s own profile is being displayed.
@@ -165,7 +176,7 @@ app.post('/sign-in', (req, res) => {
   }
   db.getUser(formData.email, formData.password, (error, result_rows) => {
     if (error) {
-      renderError(error, req);
+      renderError(error, req)
     }
     else if (result_rows.length && result_rows[0].id) {
       const user = result_rows[0]
@@ -192,7 +203,7 @@ app.post('/sign-up', (req, res) => {
   }
   db.isEmailNew(formData.email, (error, result_rows) => {
     if (error) {
-      renderError(error, req);
+      renderError(error, req)
     }
     else if (result_rows.length && result_rows[0].answer) {
       db.createUser(
@@ -223,7 +234,7 @@ app.post('/sign-up', (req, res) => {
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
   if (!isUser(req) || !formData.review) {
-    renderError(error, req);
+    renderError(error, req)
   }
   else  {
     db.createReview(
@@ -232,7 +243,7 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
       formData.review,
       (error, result_rows) => {
         if (error) {
-          renderError(error, req);
+          renderError(error, req)
         }
         else {
           res.redirect(`/albums/${req.params.albumID}`)
@@ -245,7 +256,9 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
 // ##################### ROUTES END #####################
 
 app.use((req, res) => {
-  res.status(404).render('not-found', {statusLinks: getStatusLinks(req, true, true)})
+  res.status(404).render(
+    'not-found', {statusLinks: getStatusLinks(req, [])}
+  )
 })
 
 app.listen(port, () => {

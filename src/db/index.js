@@ -23,7 +23,19 @@ function getUsersByID(userID, cb) {
 }
 
 function getReviewViews(countLimit, cb) {
-  _query('SELECT albums.title as album, reviews.submission_date, reviews.review, users.name as author FROM reviews, albums, users WHERE albums.id = reviews.album AND users.id = reviews.author order by reviews.submission_date desc limit $1', [countLimit], cb)
+  _query(
+    'SELECT albums.title as album, reviews.submission_date, reviews.review, users.name as author FROM reviews, albums, users WHERE albums.id = reviews.album AND users.id = reviews.author order by reviews.submission_date desc$1',
+    [countLimit ? ` limit ${countLimit}` : ''],
+    cb
+  )
+}
+
+function getAlbumReviewViews(album, countLimit, cb) {
+  _query(
+    'SELECT albums.title as album, reviews.submission_date, reviews.review, users.name as author FROM albums, reviews, users WHERE albums.id = $1 AND reviews.album = album.id AND users.id = reviews.author order by reviews.submission_date desc$2',
+    [album, countLimit ? ` limit ${countLimit}` : ''],
+    cb
+  )
 }
 
 function isEmailNew(email, cb) {
@@ -74,9 +86,11 @@ function _query(sql, variables, cb) {
 }
 
 module.exports = {
+  createReview,
   createUser,
   getAlbums,
   getAlbumsByID,
+  getReviewViews,
   getUser,
   getUsers,
   getUsersByID,

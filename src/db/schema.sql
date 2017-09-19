@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS albums, users CASCADE;
+DROP TABLE IF EXISTS albums, reviews, users CASCADE;
 
 CREATE TABLE albums (
   id SERIAL PRIMARY KEY,
@@ -12,4 +12,12 @@ CREATE TABLE users (
   email VARCHAR(50) UNIQUE NOT NULL,
   join_date DATE DEFAULT CURRENT_DATE NOT NULL,
   password VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE reviews (
+  id SERIAL PRIMARY KEY,
+  album INTEGER REFERENCES albums(id) NOT NULL,
+  author INTEGER REFERENCES users(id) NOT NULL,
+  review VARCHAR(150) NOT NULL,
+  submission_date DATE DEFAULT CURRENT_DATE NOT NULL
 );

@@ -31,14 +31,38 @@ const messages = {
   otherwise: 'Something was wrong with the inputs.'
 }
 
-const getLink = (linkKey, id) => {
+const isUser = req => req.session && req.session.user && req.session.user.id
+
+const getLink = (hidable, linkKey, id) => {
+  const className = hidable ? 'invisible' : 'visible'
   const links = {
-    sign-up: ['Sign up', '/sign-up'],
-    sign-in: ['Sign in', '/sign-in'],
-    profile: ['Profile', `/users/${id}`],
-    sign-out: ['Sign out', '/sign-out']
+    signup: [className, 'Sign up', '/sign-up'],
+    signin: [className, 'Sign in', '/sign-in'],
+    profile: [className, 'Profile', `/users/${id}`],
+    signout: [className, 'Sign out', '/sign-out']
   }
-  return links[linkKey];
+  return links[linkKey]
+}
+
+const getStatusLinks = (req, hidables) => {
+  if (isUser(req)) {
+    return [
+      getLink(hidables.includes('profile'), 'profile', req.session.user.id),
+      getLink(hidables.includes('signout'), 'signout')
+    ]
+  }
+  else {
+    return [
+      getLink(hidables.includes('signin'), 'signin'),
+      getLink(hidables.includes('signup'), 'signup')
+    ]
+  }
+}
+
+const renderError = (error, req) => {
+  res.status(500).render(
+    'error', {error, statusLinks: getStatusLinks(req, [])}
+  )
 }
 
 // ##################### ROUTES START #####################
@@ -46,66 +70,86 @@ const getLink = (linkKey, id) => {
 app.get('/', (req, res) => {
   db.getAlbums((error, albums) => {
     if (error) {
-      res.status(500).render('error', {error})
+      renderError(error, req);
     } else {
-      if (req.session && req.session.user) {
-        link0 = getLink('profile', req.session.user.id);
-        link1 = getLink('sign-out');
-      }
-      else {
-        link0 = getLink('sign-in');
-        link1 = getLink('sign-up');
-      }
-      // This is where to put the session-inspecting logic that sets link0
-      // and link 1 to the right links for inclusion in the index view.
-      res.render('index', {albums, link0, link1})
+      db.getReviewViews(3, (error, reviewViews) => {
+        if (error) {
+          renderError(error, req);
+        }
+        else {
+          res.render(
+            'index',
+            {albums, reviewViews, statusLinks: getStatusLinks(req, [])}
+          )
+        }
+      })
     }
   })
 })
 
 app.get('/sign-up', (req, res) => {
-  res.render('sign-up', {message: ''})
+  res.render(
+    'sign-up', {message: '', statusLinks: getStatusLinks(req, ['signup'])}
+  )
 })
 
 app.get('/sign-in', (req, res) => {
-  res.render('sign-in')
+  res.render(
+    'sign-in', {message: '', statusLinks: getStatusLinks(req, ['signin'])}
+  )
+})
+
+app.get('/sign-out', (req, res) => {
+  delete req.session.user;
+  res.redirect('/')
 })
 
 app.get('/albums/:albumID(\\d+)', (req, res) => {
   const albumID = req.params.albumID
-
   db.getAlbumsByID(albumID, (error, albums) => {
     if (error) {
-      res.status(500).render('error', {error})
-    } else {
-      const album = albums[0]
-      res.render('album', {album})
+      renderError(error, req);
+    }
+    else if (albums.length) {
+      res.render(
+        'album', {album: albums[0], statusLinks: getStatusLinks(req, [])}
+      )
+    }
+    else {
+      res.redirect('not-found');
     }
   })
 })
 
 app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const albumID = req.params.albumID
-
   db.getAlbumsByID(albumID, (error, albums) => {
     if (error) {
-      res.status(500).render('error', {error})
+      renderError(error, req);
     } else {
       const album = albums[0]
-      res.render('new-review', {album})
+      res.render(
+        'new-review', {album, statusLinks: getStatusLinks(req, [])}
+      )
     }
   })
 })
 
 app.get('/users/:userID(\\d+)', (req, res) => {
   const userID = req.params.userID
-
+  const isOwnProfile = isUser(req) && userID === req.session.user.id
   db.getUsersByID(userID, (error, users) => {
     if (error) {
-      res.status(500).render('error', {error})
+      renderError(error, req);
     } else {
       const user = users[0]
-      res.render('user', {user})
+      // Suppress profile button if user’s own profile is being displayed.
+      res.render(
+        'user', {
+          user,
+          statusLinks: getStatusLinks(req, isOwnProfile ? ['profile'] : [])
+        }
+      )
     }
   })
 })
@@ -113,18 +157,26 @@ app.get('/users/:userID(\\d+)', (req, res) => {
 app.post('/sign-in', (req, res) => {
   const formData = req.body
   if (!formData.email || !formData.password) {
-    res.render('sign-up', {message: messages.missing2Credentials})
+    res.render('sign-up', {
+      message: messages.missing2Credentials,
+      statusLinks: getStatusLinks(req, ['signup'])
+    })
     return
   }
-  db.getUserID(formData.email, formData.password, (error, result_rows) => {
+  db.getUser(formData.email, formData.password, (error, result_rows) => {
     if (error) {
-      res.status(500).render('error', {error})
+      renderError(error, req);
     }
     else if (result_rows.length && result_rows[0].id) {
-      res.redirect('/users/' + result_rows[0].id)
+      const user = result_rows[0]
+      req.session.user = {id: user.id, name: user.name, email: formData.email}
+      res.redirect(`/users/${user.id}`)
     }
     else {
-      res.render('sign-in', {message: messages.badSignin})
+      res.render('sign-in', {
+        message: messages.badSignin,
+        statusLinks: getStatusLinks(req, ['signin'])
+      })
     }
   })
 })
@@ -132,12 +184,15 @@ app.post('/sign-in', (req, res) => {
 app.post('/sign-up', (req, res) => {
   const formData = req.body
   if (!formData.name || !formData.email || !formData.password) {
-    res.render('sign-up', {message: messages.missing3Credentials})
+    res.render('sign-up', {
+      message: messages.missing3Credentials,
+      statusLinks: getStatusLinks(req, ['signup'])
+    })
     return
   }
   db.isEmailNew(formData.email, (error, result_rows) => {
     if (error) {
-      res.status(500).render('error', {error})
+      renderError(error, req);
     }
     else if (result_rows.length && result_rows[0].answer) {
       db.createUser(
@@ -146,26 +201,51 @@ app.post('/sign-up', (req, res) => {
         formData.password,
         (error, result_rows) => {
           if (error) {
-            res.status(500).render('error', {error})
+            renderError(error, req);
           }
           else {
             const id = result_rows[0].id
-            req.session.user = {id, name: formData.name}
+            req.session.user = {id, name: formData.name, email: formData.email}
             res.redirect(`/users/${id}`)
           }
         }
       )
     }
     else {
-      res.render('sign-up', {message: messages.alreadyUser})
+      res.render('sign-up', {
+        message: messages.alreadyUser,
+        statusLinks: getStatusLinks(req, ['signup'])
+      })
     }
   })
+})
+
+app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
+  const formData = req.body
+  if (!isUser(req) || !formData.review) {
+    renderError(error, req);
+  }
+  else  {
+    db.createReview(
+      req.params.albumID,
+      req.session.user.id,
+      formData.review,
+      (error, result_rows) => {
+        if (error) {
+          renderError(error, req);
+        }
+        else {
+          res.redirect(`/albums/${req.params.albumID}`)
+        }
+      }
+    )
+  }
 })
 
 // ##################### ROUTES END #####################
 
 app.use((req, res) => {
-  res.status(404).render('not-found')
+  res.status(404).render('not-found', {statusLinks: getStatusLinks(req, true, true)})
 })
 
 app.listen(port, () => {

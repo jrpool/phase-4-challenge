@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Vinyl</title>
-  <link rel="stylesheet" type="text/css" href="/style.css">
-  <script type="text/javascript" src="/script.js"></script>
-</head>
-<body>
-
-  <h1>Vinyl</h1>
-
-  <h3><a href="<%= link0[1] %>"><%= link0[0] %></a></h3>
-  <h3><a href="<%= link1[1] %>"><%= link1[0] %></a></h3>
+<%- include header.ejs %>
 
   <h2>Records</h2>
 
@@ -18,7 +6,20 @@
     <% albums.forEach(function(album) { %>
       <div>
         <h5><a href="/albums/<%= album.id %>"><%= album.title %></a></h5>
-        <span><%= album.artist %></span>
+        <p><%= album.artist %></p>
+      </div>
+    <% }) %>
+  </div>
+
+  <h2>Recent Reviews</h2>
+
+  <div class="review-list">
+    <% reviewViews.forEach(function(reviewView) { %>
+      <div>
+        <h5><%= reviewView.album %></h5>
+        <p><%= reviewView.submission_date %></p>
+        <p><%= reviewView.review %></p>
+        <p>by <%= reviewView.author %></p>
       </div>
     <% }) %>
   </div>

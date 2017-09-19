@@ -1,4 +1,5 @@
 TRUNCATE users;
+SELECT SETVAL('users_id_seq', 1, false);
 
 INSERT INTO
   users (name, email, password, join_date)

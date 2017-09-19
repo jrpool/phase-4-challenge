@@ -32,7 +32,9 @@ Use the following commands to set up and seed your database:
 
 ## Implementation Notes
 
-This implementation is based on specifications of the Learners Guild Phase 4 Challenge. Per those specifications, this implementation does not adhere to the following practices:
+### Disclaimers
+
+This implementation is based on specifications of the Learners Guild Phase 4 Challenge. Per those specifications, this implementation does not adhere, at least not fully, to the following practices:
 
 - Separation of routing functionality into files in a route directory.
 
@@ -40,10 +42,18 @@ This implementation is based on specifications of the Learners Guild Phase 4 Cha
 
 - Entry of duplicate password for confirmation.
 
-- Header and footer templates to avoid code repetition.
+- Footer templates to avoid code repetition.
 
 - Exclusion of logic from routes.
 
 - Singular names of database tables.
 
 - Sessions that persist across server reloads.
+
+- Consistency in use or non-use of ES2015 syntactic innovations.
+
+### Deviations
+
+This implementation deliberately deviates from strict adherence to the following requirements:
+
+- “Users can see links to "Sign Up" and "Sign In" when logged out” and “Users can see links to "Profile" and "Sign Out" when logged in”. Those links are suppressed on pages that are identical to the targets of those links.

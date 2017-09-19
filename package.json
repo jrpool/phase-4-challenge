@@ -11,7 +11,7 @@
     "db:create": "createdb vinyl",
     "db:drop": "dropdb vinyl",
     "db:schema": "psql -d vinyl < src/db/schema.sql",
-    "db:seed": "psql -d vinyl -f src/db/albums.sql -f src/db/users.sql",
+    "db:seed": "psql -d vinyl -f src/db/seed.sql",
     "test": "./node_modules/.bin/eslint src"
   },
   "license": "MIT",

@@ -37,6 +37,14 @@ function createUser(name, email, password, cb) {
   );
 };
 
+function getUserID(email, password, cb) {
+  _query(
+    'SELECT id FROM users WHERE email = $1 AND password = $2',
+    [email, password],
+    cb
+  );
+};
+
 function _query(sql, variables, cb) {
   console.log('QUERY ->', sql.replace(/[\n\s]+/g, ' '), variables)
 
@@ -56,6 +64,7 @@ module.exports = {
   createUser,
   getAlbums,
   getAlbumsByID,
+  getUserID,
   getUsers,
   getUsersByID,
   isEmailNew

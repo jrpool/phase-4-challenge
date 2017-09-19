@@ -13,15 +13,18 @@
     <p class="form-errors"><%= message %></p>
     <label>
       <span>Name:</span>
-      <input type="text" name="name" size="50">
+      <input type="text" name="name"
+        size="50" minlength="1" maxlength="50" required>
     </label>
     <label>
       <span>Email:</span>
-      <input type="email" name="email" size="50" minlength="1" required>
+      <input type="email" name="email"
+        size="50" minlength="1" maxlength="50" required>
     </label>
     <label>
       <span>Create new password:</span>
-      <input type="password" name="password" size="20">
+      <input type="password" name="password"
+        size="20" minlength="1" maxlength="20" required>
     </label>
     <input type="submit" value="Sign up">
   </form>

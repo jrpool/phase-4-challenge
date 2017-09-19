@@ -10,14 +10,16 @@
   <h1>Vinyl: Sign In</h1>
 
   <form method="post" action="/sign-in" class="form">
-    <pre class="form-errors"></pre>
+    <pre class="form-errors"><%= message %></pre>
     <label>
       <span>Email:</span>
-      <input type="email" name="email" size="50" minlength="1" required>
+      <input type="email" name="email"
+        size="50" minlength="1" maxlength="50" required>
     </label>
     <label>
       <span>Password:</span>
-      <input type="password" name="password" size="50" minlength="1" required>
+      <input type="password" name="password"
+        size="20" minlength="1" maxlength="20" required>
     </label>
     <input type="submit" value="Sign in">
   </form>

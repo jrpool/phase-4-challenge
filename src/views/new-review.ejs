@@ -1,19 +1,19 @@
 <%- include header.ejs %>
 
-  <h2>New Review</h2>
-
-  <h3><%= album.title %></h3>
-  <p><em>by <%= album.artist %></em></p>
-
-  <form method="post" action="/albums/<%= album.id %>/reviews/new" class="form">
-    <pre class="form-errors"></pre>
-    <label>
-      <span>Review:</span>
-      <textarea cols="50" rows="3" name="review"
-        minlength="1" maxlength="150" required></textarea>
-    </label>
-    <input type="submit" value="Submit">
-  </form>
+  <div class="main">
+    <h2>New Review</h2>
+    <h3><%= album.title %></h3>
+    <p><em>by <%= album.artist %></em></p>
+    <form method="post" action="/albums/<%= album.id %>/reviews/new" class="form">
+      <pre class="form-errors"></pre>
+      <label>
+        <span>Review:</span>
+        <textarea cols="50" rows="3" name="review"
+          minlength="1" maxlength="150" required></textarea>
+      </label>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
 
 </body>
 </html>

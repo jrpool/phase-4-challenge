@@ -52,6 +52,12 @@ This implementation is based on specifications of the Learners Guild Phase 4 Cha
 
 - Consistency in use or non-use of ES2015 syntactic innovations.
 
+- Responsive design.
+
+- Delegation of feasible responsibilities to client.
+
+- Dynamic minimal revision of displayed content.
+
 ### Deviations
 
 This implementation deliberately deviates from strict adherence to the following requirements:

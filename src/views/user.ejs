@@ -1,23 +1,25 @@
 <%- include header.ejs %>
 
-  <h2>Profile: <%= user.name %></h2>
-  <p>Email: <%= user.email %></p>
-  <p>Date joined: <%= user.join_date %></p>
+  <div class="main">
+    <h2>Profile: <%= user.name %></h2>
+    <p>Email: <%= user.email %></p>
+    <p>Date joined: <%= user.join_date %></p>
 
-  <h2>Reviews</h2>
+    <h2>Reviews</h2>
 
-  <div class="review-list">
-    <%
-      reviewViews.forEach(function(reviewView) {
-        const reviewClass = reviewView.id === target ? 'doomed' : 'normal'
-    %>
-        <div class="<%= reviewClass %>">
-          <h5><%= reviewView.album %></h5>
-          <p><%= reviewView.submission_date %></p>
-          <p><%= reviewView.review %></p>
-          <p class="<%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
-        </div>
-    <% }) %>
+    <div class="review-list">
+      <%
+        reviewViews.forEach(function(reviewView) {
+          const reviewClass = reviewView.id === target ? 'doomed' : 'normal'
+      %>
+          <div class="<%= reviewClass %>">
+            <h5><%= reviewView.album %></h5>
+            <p><%= reviewView.submission_date %></p>
+            <p><%= reviewView.review %></p>
+            <p class="<%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
+          </div>
+      <% }) %>
+    </div>
   </div>
 
 </body>

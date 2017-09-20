@@ -1,22 +1,82 @@
+#banner, .main {
+  border-style: solid;
+  border-color: darkgray;
+  border-width: medium;
+  box-sizing: border-box;
+  padding: 6px;
+  width: 100%;
+}
+
+.bannerbutton {
+  float: right;
+}
+
+.bannertitle {
+  font-size: large;
+  font-weight: bold;
+}
+
+body {
+  height: 100%;
+  width: 30rem;
+  margin-top: 5%;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%);
+  border-style: solid;
+  border-color: darkgray;
+  border-width: medium;
+}
+
 doomed {
   background-color: pink;
 }
 
-html, body {
-  margin: 5%;
+html {
   padding: 0;
   width: 100vw;
+}
+
+label {
+  display: block;
+}
+
+.left {
+  display: inline-block;
+  vertical-align: top;
+  width: 10rem;
+}
+
+.nav, .offer {
+  border-style: solid;
+  border-color: gray;
+  border-width: 3px;
+  border-radius: 9px;
+  padding: 3px;
+  margin-left: 5%;
+  font-size: medium;
 }
 
 normal {
   background-color: default;
 }
 
-p.invisible {
+.offer {
+  float: right;
+  margin-right: 10%;
+}
+
+.invisible {
   display: none;
 }
 
-p.visible {
+.visible {
+}
+
+.right {
+  display: inline-block;
+  vertical-align: top;
+  width: 15rem;
 }
 
 .warning {

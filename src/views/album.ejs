@@ -1,18 +1,18 @@
 <%- include header.ejs %>
 
-  <h2>Album: <%= album.title %></h2>
-  <p>by <%= album.artist %></p>
-
-  <h2>Reviews</h2>
-
-  <div class="review-list">
-    <% reviewViews.forEach(function(reviewView) { %>
-      <div>
-        <p><%= reviewView.submission_date %></p>
-        <p><%= reviewView.review %></p>
-        <p>by <%= reviewView.author %></p>
-      </div>
-    <% }) %>
+  <div class="main">
+    <h2>Album: <%= album.title %></h2>
+    <p>by <%= album.artist %></p>
+    <h2>Reviews <span class="offer"><a href="/albums/<%= album.id %>/reviews/new">Add review</a></span></h2>
+    <div class="review-list">
+      <% reviewViews.forEach(function(reviewView) { %>
+        <div>
+          <p><%= reviewView.submission_date %></p>
+          <p><%= reviewView.review %></p>
+          <p>by <a href="/users/<%= reviewView.author_id %>"><%= reviewView.author_name %></a></p>
+        </div>
+      <% }) %>
+    </div>
   </div>
 
 </body>

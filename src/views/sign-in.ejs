@@ -1,20 +1,21 @@
 <%- include header.ejs %>
 
-  <h2>Sign In</h2>
-
-  <form method="post" action="/sign-in" class="form">
-    <label>
-      <span>Email:</span>
-      <input type="email" name="email"
-        size="50" minlength="1" maxlength="50" required>
-    </label>
-    <label>
-      <span>Password:</span>
-      <input type="password" name="password"
-        size="20" minlength="1" maxlength="20" required>
-    </label>
-    <input type="submit" value="Sign in">
-  </form>
+  <div class="main">
+    <h2>Sign In</h2>
+    <form method="post" action="/sign-in" class="form">
+      <label>
+        <span>Email:</span>
+        <input type="email" name="email"
+          size="50" minlength="1" maxlength="50" required>
+      </label>
+      <label>
+        <span>Password:</span>
+        <input type="password" name="password"
+          size="20" minlength="1" maxlength="20" required>
+      </label>
+      <input type="submit" value="Sign in">
+    </form>
+  </div>
 
 </body>
 </html>

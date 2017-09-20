@@ -1,8 +1,8 @@
 <%- include header.ejs %>
 
   <h2>Profile: <%= user.name %></h2>
-  <p><em><%= user.email %></em></p>
-  <p><em><%= user.join_date %></em></p>
+  <p>Email: <%= user.email %></p>
+  <p>Date joined: <%= user.join_date %></p>
 
   <h2>Reviews</h2>
 
@@ -12,7 +12,8 @@
         <h5><%= reviewView.album %></h5>
         <p><%= reviewView.submission_date %></p>
         <p><%= reviewView.review %></p>
-      </div>
+        <p class="<%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
+    </div>
     <% }) %>
   </div>
 

@@ -43,7 +43,7 @@ function getAlbumReviewViews(album, countLimit, cb) {
 function getUserReviewViews(user, countLimit, cb) {
   const limitText = countLimit ? ` limit ${countLimit}` : ''
   _query(
-    `SELECT albums.title as album, reviews.submission_date, reviews.review FROM reviews, albums WHERE reviews.author = $1 AND albums.id = reviews.album order by reviews.submission_date desc${limitText}`,
+    `SELECT reviews.id, albums.title as album, reviews.submission_date, reviews.review FROM reviews, albums WHERE reviews.author = $1 AND albums.id = reviews.album order by reviews.submission_date desc${limitText}`,
     [user],
     cb
   )
@@ -77,6 +77,14 @@ function createReview(album, author, review, cb) {
     'INSERT INTO reviews (album, author, review) '
     + 'VALUES ($1, $2, $3) RETURNING id',
     [album, author, review],
+    cb
+  );
+};
+
+function deleteReview(review, cb) {
+  _query(
+    'DELETE FROM reviews WHERE id = $1 RETURNING id',
+    [review],
     cb
   );
 };

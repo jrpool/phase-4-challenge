@@ -28,6 +28,7 @@ const messages = {
   alreadyUser: 'Someone with that email address is already registered.',
   missing2Credentials: 'Both a username and a password are required.',
   missing3Credentials: 'A username, email address, and password are required.',
+  signinRequired: 'You must sign in before doing that.',
   otherwise: 'Something was wrong with the inputs.'
 }
 
@@ -159,12 +160,18 @@ app.get('/users/:userID(\\d+)', (req, res) => {
           renderError(error, req, res)
         }
         else {
-          // Suppress profile button if user’s own profile is being displayed.
+          /*
+            Suppress profile button if, and suppress review-delete buttons
+            unless, user’s own profile is being displayed.
+          */
           res.render(
             'user', {
               user: users[0],
+              statusLinks: getStatusLinks(
+                req, isOwnProfile ? ['profile'] : []
+              ),
               reviewViews,
-              statusLinks: getStatusLinks(req, isOwnProfile ? ['profile'] : [])
+              reviewDeleteToolClass: isOwnProfile ? 'visible' : 'invisible'
             }
           )
         }
@@ -251,6 +258,10 @@ app.post('/sign-up', (req, res) => {
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
   if (!isUser(req) || !formData.review) {
+    const error = {
+      message: messages.signinRequired,
+      stack: '/albums/:albumID/reviews/new'
+    }
     renderError(error, req, res)
   }
   else  {
@@ -267,6 +278,29 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
         }
       }
     )
+  }
+})
+
+app.delete('/reviews/:reviewID(\\d+)', (req, res) => {
+  if (!isUser(req)) {
+    const error = {
+      message: messages.signinRequired,
+      stack: '/reviews/:reviewID[delete]'
+    }
+    renderError(error, req, res)
+  }
+  else if (!formData.review) {
+    res.redirect('/not-found')
+  }
+  else  {
+    db.deleteReview(req.params.reviewID, (error, result_rows) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else {
+        res.status(303).redirect(`/users/${req.session.user.id}`)
+      }
+    })
   }
 })
 

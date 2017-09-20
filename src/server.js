@@ -32,7 +32,14 @@ const messages = {
   otherwise: 'Something was wrong with the inputs.'
 }
 
-const isUser = req => req.session && req.session.user && req.session.user.id
+const getUserID = req => {
+  if (req.session && req.session.user) {
+    return req.session.user.id
+  }
+  else {
+    return undefined;
+  }
+}
 
 const getLink = (hidable, linkKey, id) => {
   const className = hidable ? 'invisible' : 'visible'
@@ -46,9 +53,10 @@ const getLink = (hidable, linkKey, id) => {
 }
 
 const getStatusLinks = (req, hidables) => {
-  if (isUser(req)) {
+  const userID = getUserID(req);
+  if (userID) {
     return [
-      getLink(hidables.includes('profile'), 'profile', req.session.user.id),
+      getLink(hidables.includes('profile'), 'profile', userID),
       getLink(hidables.includes('signout'), 'signout')
     ]
   }
@@ -148,14 +156,19 @@ app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
 })
 
 app.get('/users/:userID(\\d+)', (req, res) => {
-  const userID = req.params.userID
-  const isOwnProfile = isUser(req) && userID === req.session.user.id
-  db.getUsersByID(userID, (error, users) => {
+  const shownUserID = Number.parseInt(req.params.userID, 10)
+  const ownUserID = getUserID(req)
+  const isOwnProfile = shownUserID === ownUserID
+  console.log('isOwnProfile is ' + isOwnProfile)
+  console.log('shownUserID is ' + shownUserID)
+  console.log('ownUserID is ' + ownUserID)
+  console.log('session is ' + JSON.stringify(req.session))
+  db.getUsersByID(shownUserID, (error, users) => {
     if (error) {
       renderError(error, req, res)
     }
     else if (users.length) {
-      db.getUserReviewViews(userID, 0, (error, reviewViews) => {
+      db.getUserReviewViews(shownUserID, 0, (error, reviewViews) => {
         if (error) {
           renderError(error, req, res)
         }
@@ -181,6 +194,57 @@ app.get('/users/:userID(\\d+)', (req, res) => {
       res.redirect('/not-found')
     }
   })
+})
+
+app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
+  const userID = getUserID(req)
+  if (!userID) {
+    const error = {
+      message: messages.signinRequired,
+      stack: '/reviews/:reviewID/delete'
+    }
+    renderError(error, req, res)
+  }
+  else {
+    const reviewID = req.params.reviewID
+    res.render('user', {
+      user: req.session.user,
+      statusLinks: getStatusLinks(
+        req, isOwnProfile ? ['profile'] : []
+      ),
+      reviewViews,
+      target: reviewID,
+      message: 'Are you sure you want to delete this review?',
+      reviewDeleteToolClass: isOwnProfile ? 'visible' : 'invisible',
+      confirmClass = 'visible',
+      confirmLinks = [
+        [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
+        [`/users/${userID}`, 'Cancel']
+      ]
+    })
+  }
+})
+
+app.get('/reviews/:reviewID(\\d+)/delete/confirm', (req, res) => {
+  const userID = getUserID(req)
+  if (!userID) {
+    const error = {
+      message: messages.signinRequired,
+      stack: '/reviews/:reviewID/delete/confirm'
+    }
+    renderError(error, req, res)
+  }
+  else {
+    const reviewID = req.params.reviewID
+    db.deleteReview(reviewID, userID, (error, result_rows) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else {
+        res.redirect(`/users/${userID}`)
+      }
+    })
+  }
 })
 
 app.get('/not-found', (req, res) => {
@@ -257,17 +321,21 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
-  if (!isUser(req) || !formData.review) {
+  const userID = getUserID(req)
+  if (!userID) {
     const error = {
       message: messages.signinRequired,
       stack: '/albums/:albumID/reviews/new'
     }
     renderError(error, req, res)
   }
-  else  {
+  else if (!formData.review) {
+    res.redirect('/not-found')
+  }
+  else {
     db.createReview(
       req.params.albumID,
-      req.session.user.id,
+      userID,
       formData.review,
       (error, result_rows) => {
         if (error) {
@@ -278,29 +346,6 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
         }
       }
     )
-  }
-})
-
-app.delete('/reviews/:reviewID(\\d+)', (req, res) => {
-  if (!isUser(req)) {
-    const error = {
-      message: messages.signinRequired,
-      stack: '/reviews/:reviewID[delete]'
-    }
-    renderError(error, req, res)
-  }
-  else if (!formData.review) {
-    res.redirect('/not-found')
-  }
-  else  {
-    db.deleteReview(req.params.reviewID, (error, result_rows) => {
-      if (error) {
-        renderError(error, req, res)
-      }
-      else {
-        res.status(303).redirect(`/users/${req.session.user.id}`)
-      }
-    })
   }
 })
 

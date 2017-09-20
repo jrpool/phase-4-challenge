@@ -81,10 +81,10 @@ function createReview(album, author, review, cb) {
   );
 };
 
-function deleteReview(review, cb) {
+function deleteReview(id, author, cb) {
   _query(
-    'DELETE FROM reviews WHERE id = $1 RETURNING id',
-    [review],
+    'DELETE FROM reviews WHERE id = $1 AND author = $2 RETURNING id',
+    [id, author],
     cb
   );
 };

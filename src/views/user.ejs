@@ -8,11 +8,11 @@
 
   <div class="review-list">
     <% reviewViews.forEach(function(reviewView) { %>
-      <div>
+      <div class="<%= reviewView.id === target ? 'doomed' : 'normal' %>">
         <h5><%= reviewView.album %></h5>
         <p><%= reviewView.submission_date %></p>
         <p><%= reviewView.review %></p>
-        <p class="<%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
+        <p class="<%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete/confirm">🗑</a></button></p>
     </div>
     <% }) %>
   </div>

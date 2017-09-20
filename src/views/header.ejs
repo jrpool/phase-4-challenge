@@ -6,16 +6,15 @@
   <script type="text/javascript" src="/script.js"></script>
 </head>
 <body>
-
-  <p class="<%= statusLinks[0][0] %>"><button type="button"><a href="<%= statusLinks[0][2] %>"><%= statusLinks[0][1] %></a></button></p>
-  <p class="<%= statusLinks[1][0] %>"><button type="button"><a href="<%= statusLinks[1][2] %>"><%= statusLinks[1][1] %></a></button></p>
+    <p class="<%= statusLinks[0][0] %>"><button type="button"><a href="<%= statusLinks[0][2] %>"><%= statusLinks[0][1] %></a></button></p>
+    <p class="<%= statusLinks[1][0] %>"><button type="button"><a href="<%= statusLinks[1][2] %>"><%= statusLinks[1][1] %></a></button></p>
 
   <h1>Vinyl</h1>
 
-  <p class="warning"><%= message %></p>
-
-  <div class="<%= confirmClass %>">
-    <p><%= confirmInvitation %></p>
-    <p><button type="button"><a href="<%= confirmLinks[0][0] %>"><%= confirmLinks[0][1] %></a></button></p>
-    <p><button type="button"><a href="<%= confirmLinks[1][0] %>"><%= confirmLinks[1][1] %></a></button></p>
-  </div>
+  <% if (locals.confirmInvitation) { %>
+    <div class="<%= confirmClass %>">
+      <p><%= confirmInvitation %></p>
+      <p><button type="button"><a href="<%= confirmLinks[0][0] %>"><%= confirmLinks[0][1] %></a></button></p>
+      <p><button type="button"><a href="<%= confirmLinks[1][0] %>"><%= confirmLinks[1][1] %></a></button></p>
+    </div>
+  <% } %>

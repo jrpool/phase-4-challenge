@@ -49,6 +49,12 @@ function getUserReviewViews(user, countLimit, cb) {
   )
 }
 
+function getAuthorID(reviewID, cb) {
+  _query(
+    'SELECT author FROM reviews WHERE id = $1', [reviewID], cb
+  )
+}
+
 function isEmailNew(email, cb) {
   _query(
     'SELECT COUNT(id) = 0 AS answer FROM users WHERE email = $1', [email], cb
@@ -107,9 +113,11 @@ function _query(sql, variables, cb) {
 module.exports = {
   createReview,
   createUser,
+  deleteReview,
   getAlbumReviewViews,
   getAlbums,
   getAlbumsByID,
+  getAuthorID,
   getReviewViews,
   getUser,
   getUserReviewViews,

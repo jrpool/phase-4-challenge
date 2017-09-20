@@ -29,6 +29,7 @@ const messages = {
   missing2Credentials: 'Both a username and a password are required.',
   missing3Credentials: 'A username, email address, and password are required.',
   signinRequired: 'You must sign in before doing that.',
+  forbidden: 'You do not have permission to do that.',
   otherwise: 'Something was wrong with the inputs.'
 }
 
@@ -73,6 +74,11 @@ const renderError = (error, req, res) => {
     'error', {error, statusLinks: getStatusLinks(req, [])}
   )
 }
+
+let message = '',
+  confirmClass = 'visible',
+  statusLinks = [['', '', ''], ['', '', '']],
+  confirmLinks = [['', ''], ['', '']]
 
 // ##################### ROUTES START #####################
 
@@ -159,10 +165,6 @@ app.get('/users/:userID(\\d+)', (req, res) => {
   const shownUserID = Number.parseInt(req.params.userID, 10)
   const ownUserID = getUserID(req)
   const isOwnProfile = shownUserID === ownUserID
-  console.log('isOwnProfile is ' + isOwnProfile)
-  console.log('shownUserID is ' + shownUserID)
-  console.log('ownUserID is ' + ownUserID)
-  console.log('session is ' + JSON.stringify(req.session))
   db.getUsersByID(shownUserID, (error, users) => {
     if (error) {
       renderError(error, req, res)
@@ -183,6 +185,10 @@ app.get('/users/:userID(\\d+)', (req, res) => {
               statusLinks: getStatusLinks(
                 req, isOwnProfile ? ['profile'] : []
               ),
+              target: '',
+              confirmInvitation: '',
+              confirmClass: 'invisible',
+              confirmLinks: [['', ''], ['', '']],
               reviewViews,
               reviewDeleteToolClass: isOwnProfile ? 'visible' : 'invisible'
             }
@@ -207,20 +213,47 @@ app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
   }
   else {
     const reviewID = req.params.reviewID
-    res.render('user', {
-      user: req.session.user,
-      statusLinks: getStatusLinks(
-        req, isOwnProfile ? ['profile'] : []
-      ),
-      reviewViews,
-      target: reviewID,
-      message: 'Are you sure you want to delete this review?',
-      reviewDeleteToolClass: isOwnProfile ? 'visible' : 'invisible',
-      confirmClass = 'visible',
-      confirmLinks = [
-        [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
-        [`/users/${userID}`, 'Cancel']
-      ]
+    db.getAuthorID(reviewID, (error, result_rows) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else if (result_rows[0].author !== userID) {
+        const error = {
+          message: messages.forbidden,
+          stack: '/reviews/:reviewID/delete'
+        }
+        renderError(error, req, res)
+      }
+      else {
+        db.getUsersByID(userID, (error, users) => {
+          if (error) {
+            renderError(error, req, res)
+          }
+          else if (users.length) {
+            db.getUserReviewViews(userID, 0, (error, reviewViews) => {
+              if (error) {
+                renderError(error, req, res)
+              }
+              else {
+                res.render('user', {
+                  user: users[0],
+                  statusLinks: getStatusLinks(req, ['profile']),
+                  reviewViews,
+                  target: reviewID,
+                  confirmInvitation:
+                    'Are you sure you want to delete this review?',
+                  reviewDeleteToolClass: 'visible',
+                  confirmClass: 'visible',
+                  confirmLinks: [
+                    [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
+                    [`/users/${userID}`, 'Cancel']
+                  ]
+                })
+              }
+            })
+          }
+        })
+      }
     })
   }
 })
@@ -321,6 +354,8 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
+  console.log('formData has keys ' + Object.keys(formData))
+  console.log('formData.review is ' + formData.review)
   const userID = getUserID(req)
   if (!userID) {
     const error = {

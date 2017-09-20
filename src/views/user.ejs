@@ -10,13 +10,16 @@
     <div class="review-list">
       <%
         reviewViews.forEach(function(reviewView) {
+          console.log('reviewView.id is ' + reviewView.id)
+          console.log('target is ' + target)
           const reviewClass = reviewView.id === target ? 'doomed' : 'normal'
+          console.log('reviewClass is ' + reviewClass)
       %>
           <div class="<%= reviewClass %>">
             <h5><%= reviewView.album %></h5>
             <p class="detail minor"><%= reviewView.submission_date %></p>
             <p class="detail"><%= reviewView.review %></p>
-            <p class="detail <%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
+            <p class="whiteback detail <%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
           </div>
       <% }) %>
     </div>

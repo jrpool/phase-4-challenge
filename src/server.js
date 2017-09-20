@@ -212,7 +212,7 @@ app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
     renderError(error, req, res)
   }
   else {
-    const reviewID = req.params.reviewID
+    const reviewID = Number.parseInt(req.params.reviewID, 10)
     db.getAuthorID(reviewID, (error, result_rows) => {
       if (error) {
         renderError(error, req, res)

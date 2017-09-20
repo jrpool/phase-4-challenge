@@ -354,8 +354,6 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
-  console.log('formData has keys ' + Object.keys(formData))
-  console.log('formData.review is ' + formData.review)
   const userID = getUserID(req)
   if (!userID) {
     const error = {

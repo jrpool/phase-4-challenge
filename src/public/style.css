@@ -28,6 +28,14 @@ body {
   border-width: medium;
 }
 
+.detail {
+  margin-top: 6px;
+}
+
+.detail, h2, h5 {
+  margin-bottom: 0;
+}
+
 doomed {
   background-color: pink;
 }
@@ -45,6 +53,14 @@ label {
   display: inline-block;
   vertical-align: top;
   width: 10rem;
+}
+
+.minor {
+  font-size: x-small;
+}
+
+.offset {
+  margin-left: 30px;
 }
 
 .nav, .offer {
@@ -77,6 +93,10 @@ normal {
   display: inline-block;
   vertical-align: top;
   width: 15rem;
+}
+
+.superhead {
+  margin-bottom: -10px;
 }
 
 .warning {

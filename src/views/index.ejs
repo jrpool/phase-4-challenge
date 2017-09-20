@@ -7,7 +7,7 @@
         <% albums.forEach(function(album) { %>
           <div>
             <h5><a href="/albums/<%= album.id %>"><%= album.title %></a></h5>
-            <p><%= album.artist %></p>
+            <p class="detail"><%= album.artist %></p>
           </div>
         <% }) %>
       </div>
@@ -18,9 +18,9 @@
         <% reviewViews.forEach(function(reviewView) { %>
           <div>
             <h5><a href="/albums/<%= reviewView.album_id %>"><%= reviewView.album_title %></a></h5>
-            <p><%= reviewView.submission_date %></p>
-            <p><%= reviewView.review %></p>
-            <p>by <a href="/users/<%= reviewView.author_id %>"><%= reviewView.author_name %></a></p>
+            <p class="detail minor"><%= reviewView.submission_date %></p>
+            <p class="detail">“<%= reviewView.review %>”</p>
+            <p class="detail offset">by <a href="/users/<%= reviewView.author_id %>"><%= reviewView.author_name %></a></p>
           </div>
         <% }) %>
       </div>

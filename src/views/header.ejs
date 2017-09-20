@@ -14,9 +14,8 @@
   </section>
 
   <% if (locals.confirmInvitation) { %>
-    <section class="<%= confirmClass %>">
+    <section class="main <%= confirmClass %>">
       <p><%= confirmInvitation %></p>
-      <p><button type="button"><a href="<%= confirmLinks[0][0] %>"><%= confirmLinks[0][1] %></a></button></p>
-      <p><button type="button"><a href="<%= confirmLinks[1][0] %>"><%= confirmLinks[1][1] %></a></button></p>
+      <p><button type="button"><a href="<%= confirmLinks[0][0] %>"><%= confirmLinks[0][1] %></a></button> <button type="button"><a href="<%= confirmLinks[1][0] %>"><%= confirmLinks[1][1] %></a></button></p>
     </section>
   <% } %>

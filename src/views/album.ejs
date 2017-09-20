@@ -7,9 +7,9 @@
     <div class="review-list">
       <% reviewViews.forEach(function(reviewView) { %>
         <div>
-          <p><%= reviewView.submission_date %></p>
-          <p><%= reviewView.review %></p>
-          <p>by <a href="/users/<%= reviewView.author_id %>"><%= reviewView.author_name %></a></p>
+          <p class="detail minor"><%= reviewView.submission_date %></p>
+          <p class="detail">“<%= reviewView.review %>”</p>
+          <p class="detail offset">by <a href="/users/<%= reviewView.author_id %>"><%= reviewView.author_name %></a></p>
         </div>
       <% }) %>
     </div>

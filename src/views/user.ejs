@@ -2,10 +2,10 @@
 
   <div class="main">
     <h2>Profile: <%= user.name %></h2>
-    <p>Email: <%= user.email %></p>
-    <p>Date joined: <%= user.join_date %></p>
+    <p class="detail">Email: <a href="mailto:<%= user.email %>"><%= user.email %></a></p>
+    <p class="detail">Date joined: <%= user.join_date %></p>
 
-    <h2>Reviews</h2>
+    <h2 class="superhead">Reviews</h2>
 
     <div class="review-list">
       <%
@@ -14,9 +14,9 @@
       %>
           <div class="<%= reviewClass %>">
             <h5><%= reviewView.album %></h5>
-            <p><%= reviewView.submission_date %></p>
-            <p><%= reviewView.review %></p>
-            <p class="<%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
+            <p class="detail minor"><%= reviewView.submission_date %></p>
+            <p class="detail"><%= reviewView.review %></p>
+            <p class="detail <%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
           </div>
       <% }) %>
     </div>

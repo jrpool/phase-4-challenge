@@ -78,6 +78,14 @@ function getUser(email, password, cb) {
   );
 };
 
+function createAlbum(title, author, cb) {
+  _query(
+    'INSERT INTO albums (title, artist) VALUES ($1, $2) RETURNING id',
+    [title, author],
+    cb
+  );
+};
+
 function createReview(album, author, review, cb) {
   _query(
     'INSERT INTO reviews (album, author, review) '
@@ -108,6 +116,7 @@ function _query(sql, variables, cb) {
 }
 
 module.exports = {
+  createAlbum,
   createReview,
   createUser,
   deleteReview,

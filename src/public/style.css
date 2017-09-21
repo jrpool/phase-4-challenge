@@ -1,3 +1,21 @@
+.alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-style: solid;
+  border-color: blue;
+  border-width: 3px;
+  border-radius: 15px;
+  padding: 6px;
+  background-color: lightblue;
+}
+
+.alongside {
+  float: right;
+  margin-right: 10%;
+}
+
 #banner, .main {
   border-style: solid;
   border-color: darkgray;
@@ -28,6 +46,10 @@ body {
   border-width: medium;
 }
 
+.compact {
+  margin-top: 0;
+}
+
 .detail {
   margin-top: 6px;
 }
@@ -40,9 +62,17 @@ body {
   background-color: pink;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 html {
   padding: 0;
   width: 100vw;
+}
+
+.invisible {
+  display: none;
 }
 
 label {
@@ -57,10 +87,6 @@ label {
 
 .minor {
   font-size: x-small;
-}
-
-.offset {
-  margin-left: 30px;
 }
 
 .nav, .offer {
@@ -78,12 +104,11 @@ normal {
 }
 
 .offer {
-  float: right;
-  margin-right: 10%;
+  font-weight: lighter;
 }
 
-.invisible {
-  display: none;
+.offset {
+  margin-left: 30px;
 }
 
 .visible {

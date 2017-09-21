@@ -13,8 +13,8 @@
   </section>
 
   <% if (locals.confirmInvitation) { %>
-    <section class="main <%= confirmClass %>">
-      <p><%= confirmInvitation %></p>
-      <p><button type="button"><a href="<%= confirmLinks[0][0] %>"><%= confirmLinks[0][1] %></a></button> <button type="button"><a href="<%= confirmLinks[1][0] %>"><%= confirmLinks[1][1] %></a></button></p>
+    <section class="alert <%= confirmClass %>">
+      <h5 class="compact"><%= confirmInvitation %></h5>
+      <p class="detail"><button type="button"><a href="<%= confirmLinks[0][0] %>"><%= confirmLinks[0][1] %></a></button> <button type="button"><a href="<%= confirmLinks[1][0] %>"><%= confirmLinks[1][1] %></a></button></p>
     </section>
   <% } %>

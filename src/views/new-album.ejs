@@ -1,0 +1,22 @@
+<%- include header.ejs %>
+
+  <div class="main">
+    <h2>New Album</h2>
+    <form method="post" action="/albums/new" class="form">
+      <pre class="form-errors"></pre>
+      <label>
+        <span>Title:</span>
+        <input type="text" name="title"
+          size="50" minlength="1" maxlength="50" required>
+      </label>
+      <label>
+        <span>Artist:</span>
+        <input type="text" name="artist"
+          size="50" minlength="1" maxlength="50" required>
+      </label>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+
+</body>
+</html>

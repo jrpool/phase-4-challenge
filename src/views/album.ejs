@@ -3,7 +3,7 @@
   <div class="main">
     <h2>Album: <%= album.title %></h2>
     <p>by <%= album.artist %></p>
-    <h2>Reviews <span class="offer"><a href="/albums/<%= album.id %>/reviews/new">Add review</a></span></h2>
+    <h2>Reviews <span class="offer alongside"><a href="/albums/<%= album.id %>/reviews/new">Add review</a></span></h2>
     <div class="review-list">
       <% reviewViews.forEach(function(reviewView) { %>
         <div>

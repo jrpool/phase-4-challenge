@@ -2,19 +2,20 @@
 
   <div class="main">
     <section class="left">
-      <h2>Records</h2>
-      <div class="album-list">
+      <h2>Albums</h2>
+      <div>
         <% albums.forEach(function(album) { %>
           <div>
             <h5><a href="/albums/<%= album.id %>"><%= album.title %></a></h5>
             <p class="detail"><%= album.artist %></p>
           </div>
         <% }) %>
+        <p><span class="offer"><a href="/albums/new">New album</a></span></p>
       </div>
     </section>
     <section class="right">
       <h2>Recent Reviews</h2>
-      <div class="review-list">
+      <div>
         <% reviewViews.forEach(function(reviewView) { %>
           <div>
             <h5><a href="/albums/<%= reviewView.album_id %>"><%= reviewView.album_title %></a></h5>

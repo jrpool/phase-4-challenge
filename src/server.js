@@ -30,6 +30,7 @@ const messages = {
   missing3Credentials: 'A username, email address, and password are required.',
   signinRequired: 'You must sign in before doing that.',
   forbidden: 'You do not have permission to do that.',
+  noMissing: 'You must make an entry into each field.',
   otherwise: 'Something was wrong with the inputs.'
 }
 
@@ -147,6 +148,12 @@ app.get('/albums/:albumID(\\d+)', (req, res) => {
   })
 })
 
+app.get('/albums/new', (req, res) => {
+  res.render(
+    'new-album', {message: '', statusLinks: getStatusLinks(req, [])}
+  )
+})
+
 app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const albumID = req.params.albumID
   db.getAlbumsByID(albumID, (error, albums) => {
@@ -242,7 +249,7 @@ app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
                   target: reviewID,
                   confirmInvitation:
                     'Are you sure you want to delete this review?',
-                  reviewDeleteToolClass: 'visible',
+                  reviewDeleteToolClass: 'hidden',
                   confirmClass: 'visible',
                   confirmLinks: [
                     [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
@@ -350,6 +357,39 @@ app.post('/sign-up', (req, res) => {
       })
     }
   })
+})
+
+app.post('/albums/new', (req, res) => {
+  const formData = req.body
+  const userID = getUserID(req)
+  if (!userID) {
+    const error = {
+      message: messages.signinRequired,
+      stack: '/albums/new'
+    }
+    renderError(error, req, res)
+  }
+  else if (!formData.title || !formData.artist) {
+    const error = {
+      message: messages.noMissing,
+      stack: '/albums/new'
+    }
+    renderError(error, req, res)
+  }
+  else {
+    db.createAlbum(
+      formData.title,
+      formData.artist,
+      (error, result_rows) => {
+        if (error) {
+          renderError(error, req, res)
+        }
+        else {
+          res.redirect(`/albums/${result_rows[0].id}`)
+        }
+      }
+    )
+  }
 })
 
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {

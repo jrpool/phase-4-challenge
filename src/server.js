@@ -189,7 +189,7 @@ app.get('/users/:userID(\\d+)', (req, res) => {
           res.render(
             'user', {
               user: users[0],
-              imageurl: '/photo-blank.png',
+              imageurl: users[0].imageurl || '/photo-blank.png',
               statusLinks: getStatusLinks(
                 req, isOwnProfile ? ['profile'] : []
               ),

@@ -3,8 +3,7 @@
   <div class="main">
     <h2>
       Profile: <%= user.name %><span class="alongside">
-      <img alt="photograph" height="90" width="90"
-        src="<%= imageurl %>">
+      <img class="face" alt="photograph" src="<%= imageurl %>">
     </h2>
     <p class="detail">Email: <a href="mailto:<%= user.email %>"><%= user.email %></a></p>
     <p class="detail">Date joined: <%= user.join_date %></p>

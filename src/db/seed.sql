@@ -4,12 +4,36 @@ SELECT SETVAL('albums_id_seq', 1, false);
 SELECT SETVAL('users_id_seq', 1, false);
 
 INSERT INTO
-  users (name, email, password, join_date)
+  users (name, email, imageurl, password, join_date)
 VALUES
-  ('Jonathan Pool', 'pool@stulta.com', 'phase-3-learner', '2017-09-18'),
-  ('Barbara Lee', 'blee@house.gov', 'east-bay-rep', '2017-09-01'),
-  ('Alan Turing', 'turing@tributes.com', 'cs-pioneer', '2017-09-10'),
-  ('Kenneth Arrow', 'arrow@legacy.com', 'great-economist', '2017-09-15')
+  (
+    'Jonathan Pool',
+    'pool@stulta.com',
+    'https://panlex.org/people/pool.jpg',
+    'phase-3-learner',
+    '2017-09-18'
+  ),
+  (
+    'Barbara Lee',
+    'blee@house.gov',
+    'https://i1.wp.com/sfbayview.com/wp-content/uploads/2015/01/Barbara-Lee.jpg?resize=90%2C90',
+    'east-bay-rep',
+    '2017-09-01'
+  ),
+  (
+    'Alan Turing',
+    'turing@tributes.com',
+    'http://turing.cs.washington.edu/IMAGES/main/_turing.jpg',
+    'cs-pioneer',
+    '2017-09-10'
+  ),
+  (
+    'Kenneth Arrow',
+    'arrow@legacy.com',
+    'http://fsi.stanford.edu/sites/default/files/staff/2004/626-small_Arrow.jpg',
+    'great-economist',
+    '2017-09-15'
+  )
 ;
 
 INSERT INTO

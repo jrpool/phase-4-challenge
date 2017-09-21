@@ -46,6 +46,8 @@ This implementation is based on specifications of the Learners Guild Phase 4 Cha
 
 - Exclusion of logic from routes.
 
+- Exclusion of logic from views.
+
 - Singular names of database tables.
 
 - Sessions that persist across server reloads.
@@ -63,6 +65,26 @@ This implementation is based on specifications of the Learners Guild Phase 4 Cha
 This implementation deliberately deviates from strict adherence to the following requirements:
 
 - “Users can see links to "Sign Up" and "Sign In" when logged out” and “Users can see links to "Profile" and "Sign Out" when logged in”. Those links are suppressed on pages that are identical to the targets of those links.
+
+### Extensions
+
+Some features have been added since the “master” branch was submitted. The modified application is in the “unofficial” branch. The extensions include:
+
+- Marking of the review proposed for deletion (feature that was in the “master” branch but not working).
+
+- Relocation of deletion-confirmation dialog to more prominent and non-deflecting position.
+
+- Restyling of deletion icons as hidden but still space-taking, to prevent content shift.
+
+- Creation of new albums.
+
+- Photograph or a placeholder anonymous icon for each user, with users providing URLs on sign-up.
+
+- Display of entire list of users.
+
+- Updates to user profiles (except passwords), with fields initialized with existing data.
+
+- Earlier enforcement of permission to add reviews.
 
 ### Issues
 

@@ -33,6 +33,20 @@ VALUES
     'http://fsi.stanford.edu/sites/default/files/staff/2004/626-small_Arrow.jpg',
     'great-economist',
     '2017-09-15'
+  ),
+  (
+    'Abominable Snowman',
+    'snowman@legends.com',
+    null,
+    'faker',
+    '2017-09-20'
+  ),
+  (
+    'Antonin Dvořák',
+    'newworld@composers.com',
+    'https://en.wikipedia.org/wiki/File:Dvorak_1868.jpg',
+    'romantic',
+    '2017-09-21'
   )
 ;
 
@@ -52,5 +66,6 @@ VALUES
   (4, 1, 'Sandpaper scrapes, plus a few musical moments.', '2017-09-19'),
   (5, 1, 'An hour’s escape to a world without evil.', '2017-09-20'),
   (2, 2, 'It would make a great anthem for Occupy.', '2017-09-03'),
-  (3, 4, 'It reminds me of Milton Friedman.', '2017-09-15')
+  (3, 4, 'It reminds me of Milton Friedman.', '2017-09-15'),
+  (4, 6, 'Sorry, it hasn’t been composed yet, so no opinion.', '1902-11-13')
 ;

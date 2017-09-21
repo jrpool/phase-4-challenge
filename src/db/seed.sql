@@ -44,7 +44,7 @@ VALUES
   (
     'Antonin Dvořák',
     'newworld@composers.com',
-    'https://en.wikipedia.org/wiki/File:Dvorak_1868.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Dvorak_1868.jpg/170px-Dvorak_1868.jpg',
     'romantic',
     '2017-09-21'
   )

@@ -143,6 +143,7 @@ app.get('/albums/:albumID(\\d+)', (req, res) => {
             'album', {
               album: albums[0],
               reviewViews,
+              addReviewClass: getUserID(req) ? 'visible' : 'invisible',
               statusLinks: getStatusLinks(req, [])
             }
           )

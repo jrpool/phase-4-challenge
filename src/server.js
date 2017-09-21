@@ -26,7 +26,8 @@ app.use(session({
 const messages = {
   badSignin: 'Your username-password combination was invalid.',
   alreadyUser: 'Someone with that email address is already registered.',
-  missing2Credentials: 'Both a username and a password are required.',
+  missing2Credentials: 'Both a name and a password are required.',
+  missingNameOrEmail: 'Both a name and an email address are required.',
   missing3Credentials: 'A username, email address, and password are required.',
   signinRequired: 'You must sign in before doing that.',
   forbidden: 'You do not have permission to do that.',
@@ -95,7 +96,13 @@ app.get('/', (req, res) => {
         else {
           res.render(
             'index',
-            {albums, reviewViews, statusLinks: getStatusLinks(req, [])}
+            {
+              albums,
+              reviewViews,
+              statusLinks: getStatusLinks(req, []),
+              navTarget: 'Users',
+              navRef: '/users'
+            }
           )
         }
       })
@@ -168,6 +175,25 @@ app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   })
 })
 
+app.get('/users', (req, res) => {
+  db.getUsers((error, users) => {
+    if (error) {
+      renderError(error, req, res)
+    }
+    else if (users.length) {
+      res.render(
+        'users', {
+          statusLinks: getStatusLinks(req, []),
+          users
+        }
+      )
+    }
+    else {
+      res.redirect('/not-found')
+    }
+  })
+})
+
 app.get('/users/:userID(\\d+)', (req, res) => {
   const shownUserID = Number.parseInt(req.params.userID, 10)
   const ownUserID = getUserID(req)
@@ -198,7 +224,7 @@ app.get('/users/:userID(\\d+)', (req, res) => {
               confirmClass: 'invisible',
               confirmLinks: [['', ''], ['', '']],
               reviewViews,
-              reviewDeleteToolClass: isOwnProfile ? 'visible' : 'invisible'
+              editUserClass: isOwnProfile ? 'visible' : 'invisible'
             }
           )
         }
@@ -208,6 +234,35 @@ app.get('/users/:userID(\\d+)', (req, res) => {
       res.redirect('/not-found')
     }
   })
+})
+
+app.get('/users/:userID(\\d+)/update', (req, res) => {
+  const shownUserID = Number.parseInt(req.params.userID, 10)
+  const ownUserID = getUserID(req)
+  const isOwnProfile = shownUserID === ownUserID
+  if (!isOwnProfile) {
+    const error = {
+      message: messages.forbidden,
+      stack: '/users/:userID/update'
+    }
+    renderError(error, req, res)
+  }
+  else {
+    db.getUsersByID(shownUserID, (error, users) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else if (users.length) {
+        res.render('edit-user', {
+          user: users[0],
+          statusLinks: getStatusLinks(req, ['profile']),
+        })
+      }
+      else {
+        res.redirect('/not-found')
+      }
+    })
+  }
 })
 
 app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
@@ -250,7 +305,7 @@ app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
                   target: reviewID,
                   confirmInvitation:
                     'Are you sure you want to delete this review?',
-                  reviewDeleteToolClass: 'hidden',
+                  editUserClass: 'hidden',
                   confirmClass: 'visible',
                   confirmLinks: [
                     [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
@@ -338,6 +393,7 @@ app.post('/sign-up', (req, res) => {
       db.createUser(
         formData.name,
         formData.email,
+        formData.imageurl,
         formData.password,
         (error, result_rows) => {
           if (error) {
@@ -358,6 +414,56 @@ app.post('/sign-up', (req, res) => {
       })
     }
   })
+})
+
+app.post('/users/:userID(\\d+)/update', (req, res) => {
+  const shownUserID = Number.parseInt(req.params.userID, 10)
+  const ownUserID = getUserID(req)
+  const isOwnProfile = shownUserID === ownUserID
+  if (!isOwnProfile) {
+    const error = {
+      message: messages.forbidden,
+      stack: '/users/:userID/update/post'
+    }
+    renderError(error, req, res)
+  }
+  else {
+    const formData = req.body
+    if (!formData.name || !formData.email) {
+      res.render('edit-user', {
+        message: messages.missingNameOrEmail,
+        statusLinks: getStatusLinks(req, ['signup'])
+      })
+      return
+    }
+    db.isEmailUnique(formData.email, ownUserID, (error, result_rows) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else if (result_rows.length && result_rows[0].answer) {
+        db.updateUser(
+          ownUserID,
+          formData.name,
+          formData.email,
+          formData.imageurl,
+          (error, result_rows) => {
+            if (error) {
+              renderError(error, req, res);
+            }
+            else {
+              res.redirect(`/users/${ownUserID}`)
+            }
+          }
+        )
+      }
+      else {
+        res.render('edit-user', {
+          message: messages.alreadyUser,
+          statusLinks: getStatusLinks(req, ['signup'])
+        })
+      }
+    })
+  }
 })
 
 app.post('/albums/new', (req, res) => {
@@ -426,6 +532,7 @@ app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
 // ##################### ROUTES END #####################
 
 app.use((req, res) => {
+  console.log('Attempted URL:\n' + req.path + '\n' + req.url)
   res.redirect('/not-found')
 })
 

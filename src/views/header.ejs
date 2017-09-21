@@ -7,9 +7,9 @@
 <body>
   <section id="banner">
     <span class="bannertitle">Vinyl</span>
-    <span class="nav"><a href="/">Home</a></span>
-    <span class="bannerbutton <%= statusLinks[0][0] %>"><button type="button"><a href="<%= statusLinks[0][2] %>"><%= statusLinks[0][1] %></a></button></span>
-    <span class="bannerbutton <%= statusLinks[1][0] %>"><button type="button"><a href="<%= statusLinks[1][2] %>"><%= statusLinks[1][1] %></a></button></span>
+    <span class="nav"><a href="<%= locals.navRef || '/' %>"><%= locals.navTarget || 'Home' %></a></span>
+    <span class="nav session <%= statusLinks[1][0] %>"><a href="<%= statusLinks[1][2] %>"><%= statusLinks[1][1] %></a></span>
+    <span class="nav session <%= statusLinks[0][0] %>"><a href="<%= statusLinks[0][2] %>"><%= statusLinks[0][1] %></a></span>
   </section>
 
   <% if (locals.confirmInvitation) { %>

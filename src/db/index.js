@@ -15,7 +15,7 @@ function getAlbumsByID(albumID, cb) {
 }
 
 function getUsers(cb) {
-  _query('SELECT * FROM users', [], cb)
+  _query('SELECT * FROM users order by join_date desc, email', [], cb)
 }
 
 function getUsersByID(userID, cb) {
@@ -43,7 +43,7 @@ function getAlbumReviewViews(album, countLimit, cb) {
 function getUserReviewViews(user, countLimit, cb) {
   const limitText = countLimit ? ` limit ${countLimit}` : ''
   _query(
-    `SELECT reviews.id, albums.title as album, reviews.submission_date, reviews.review FROM reviews, albums WHERE reviews.author = $1 AND albums.id = reviews.album order by reviews.submission_date desc${limitText}`,
+    `SELECT reviews.id, albums.id as album_id, albums.title as album_title, reviews.submission_date, reviews.review FROM reviews, albums WHERE reviews.author = $1 AND albums.id = reviews.album order by reviews.submission_date desc${limitText}`,
     [user],
     cb
   )
@@ -61,11 +61,26 @@ function isEmailNew(email, cb) {
   )
 }
 
-function createUser(name, email, password, cb) {
+function isEmailUnique(email, userID, cb) {
   _query(
-    'INSERT INTO users (name, email, password) '
-    + 'VALUES ($1, $2, $3) RETURNING id',
-    [name, email, password],
+    'SELECT COUNT(id) = 0 AS answer FROM users WHERE email = $1 AND id != $2', [email, userID], cb
+  )
+}
+
+function createUser(name, email, imageurl, password, cb) {
+  _query(
+    'INSERT INTO users (name, email, imageurl, password) '
+    + 'VALUES ($1, $2, $3, $4) RETURNING id',
+    [name, email, imageurl, password],
+    cb
+  );
+};
+
+function updateUser(ownUserID, name, email, imageurl, cb) {
+  _query(
+    'UPDATE users SET name = $2, email = $3, imageurl = $4 WHERE id = $1 '
+      + 'RETURNING id',
+    [ownUserID, name, email, imageurl],
     cb
   );
 };
@@ -129,5 +144,7 @@ module.exports = {
   getUserReviewViews,
   getUsers,
   getUsersByID,
-  isEmailNew
+  isEmailNew,
+  isEmailUnique,
+  updateUser
 }

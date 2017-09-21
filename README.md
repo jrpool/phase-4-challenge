@@ -63,3 +63,9 @@ This implementation is based on specifications of the Learners Guild Phase 4 Cha
 This implementation deliberately deviates from strict adherence to the following requirements:
 
 - “Users can see links to "Sign Up" and "Sign In" when logged out” and “Users can see links to "Profile" and "Sign Out" when logged in”. Those links are suppressed on pages that are identical to the targets of those links.
+
+### Issues
+
+The following issues remain unresolved:
+
+0. In the banner, why are the floated button-like span elements 2px lower than the inline “Home” one?

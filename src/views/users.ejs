@@ -1,0 +1,17 @@
+<%- include header.ejs %>
+
+  <div class="main">
+    <h2>Users</h2>
+    <div>
+      <% users.forEach(function(user) { %>
+        <div>
+          <h5><a href="/users/<%= user.id %>"><%= user.name %></a></h5>
+          <p class="detail">Email: <a href="mailto:<%= user.email %>"><%= user.email %></a></p>
+          <p class="detail">Date joined: <%= user.join_date %></p>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+</body>
+</html>

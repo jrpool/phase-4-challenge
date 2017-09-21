@@ -1,0 +1,27 @@
+<%- include header.ejs %>
+
+  <div class="main">
+    <h2>Vinyl: Edit profile</h2>
+    <form method="post" action="/users/<%= user.id %>/update" class="form">
+      <label>
+        <span>Name:</span>
+        <input type="text" name="name"
+          size="50" minlength="1" maxlength="50" value="<%= user.name %>" required>
+      </label>
+      <label>
+        <span>Email:</span>
+        <input type="email" name="email"
+          size="50" minlength="1" maxlength="50" value="<%= user.email %>" required>
+      </label>
+      <label>
+        <span>URL of a photograph to show here (optional):</span>
+        <input type="url" name="imageurl"
+          size="50" minlength="7" maxlength="255"
+          value="<%= user.imageurl %>">
+      </label>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+
+</body>
+</html>

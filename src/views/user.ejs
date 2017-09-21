@@ -2,8 +2,8 @@
 
   <div class="main">
     <h2>
-      Profile: <%= user.name %><span class="alongside">
-      <img class="face" alt="photograph" src="<%= imageurl %>">
+      Profile: <%= user.name %><span class="<%= editUserClass %> nav"><a href="/users/<%= user.id %>/update">Edit</a></span><span class="alongside">
+      <img class="face" alt="photograph" src="<%= user.imageurl %>">
     </h2>
     <p class="detail">Email: <a href="mailto:<%= user.email %>"><%= user.email %></a></p>
     <p class="detail">Date joined: <%= user.join_date %></p>
@@ -16,10 +16,10 @@
           const reviewClass = reviewView.id === target ? 'doomed' : 'normal'
       %>
           <div class="<%= reviewClass %>">
-            <h5><%= reviewView.album %></h5>
+            <h5><a href="/albums/<%= reviewView.album_id %>"><%= reviewView.album_title %></a></h5>
             <p class="detail minor"><%= reviewView.submission_date %></p>
             <p class="detail"><%= reviewView.review %></p>
-            <p class="whiteback detail <%= reviewDeleteToolClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
+            <p class="whiteback detail <%= editUserClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></p>
           </div>
       <% }) %>
     </div>

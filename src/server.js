@@ -163,17 +163,22 @@ app.get('/albums/new', (req, res) => {
 })
 
 app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
-  const albumID = req.params.albumID
-  db.getAlbumsByID(albumID, (error, albums) => {
-    if (error) {
-      renderError(error, req, res)
-    } else {
-      const album = albums[0]
-      res.render(
-        'new-review', {album, statusLinks: getStatusLinks(req, [])}
-      )
-    }
-  })
+  if (!getUserID(req)) {
+    res.redirect('/sign-in');
+  }
+  else {
+    const albumID = req.params.albumID
+    db.getAlbumsByID(albumID, (error, albums) => {
+      if (error) {
+        renderError(error, req, res)
+      } else {
+        const album = albums[0]
+        res.render(
+          'new-review', {album, statusLinks: getStatusLinks(req, [])}
+        )
+      }
+    })
+  }
 })
 
 app.get('/users', (req, res) => {

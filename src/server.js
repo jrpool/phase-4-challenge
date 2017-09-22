@@ -273,57 +273,61 @@ app.get('/users/:userID(\\d+)/update', (req, res) => {
   }
 })
 
-app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
-  const userID = getSessionUserID(req)
-  if (!userID) {
+app.get('/users/:userID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
+  const reqUserID = Number.parseInt(req.params.userID, 10);
+  const reviewID = Number.parseInt(req.params.reviewID, 10);
+  const sessionUserID = getSessionUserID(req)
+  if (!sessionUserID) {
     const error = {
       message: messages.signinRequired,
-      stack: '/reviews/:reviewID/delete'
+      stack: `/users/${reqUserID}/reviews/${reviewID}/delete`
     }
     renderError(error, req, res)
   }
   else {
-    const reviewID = Number.parseInt(req.params.reviewID, 10)
     db.getAuthorID(reviewID, (error, result_rows) => {
       if (error) {
         renderError(error, req, res)
       }
-      else if (result_rows[0].author !== userID) {
-        const error = {
-          message: messages.forbidden,
-          stack: '/reviews/:reviewID/delete'
-        }
-        renderError(error, req, res)
-      }
       else {
-        db.getUsersByID(userID, (error, users) => {
-          if (error) {
-            renderError(error, req, res)
+        const authorID = result_rows[0].author;
+        if (authorID !== reqUserID || sessionUserID !== reqUserID) {
+          const error = {
+            message: messages.forbidden,
+            stack: `/users/${reqUserID}/reviews/${reviewID}/delete`
           }
-          else if (users.length) {
-            db.getUserReviewViews(userID, 0, (error, reviewViews) => {
-              if (error) {
-                renderError(error, req, res)
-              }
-              else {
-                res.render('user', {
-                  user: users[0],
-                  statusLinks: getStatusLinks(req, ['profile']),
-                  reviewViews,
-                  target: reviewID,
-                  confirmInvitation:
-                    'Are you sure you want to delete this review?',
-                  editUserClass: 'hidden',
-                  confirmClass: 'visible',
-                  confirmLinks: [
-                    [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
-                    [`/users/${userID}`, 'Cancel']
-                  ]
-                })
-              }
-            })
-          }
-        })
+          renderError(error, req, res)
+        }
+        else {
+          db.getUsersByID(reqUserID, (error, users) => {
+            if (error) {
+              renderError(error, req, res)
+            }
+            else if (users.length) {
+              db.getUserReviewViews(reqUserID, 0, (error, reviewViews) => {
+                if (error) {
+                  renderError(error, req, res)
+                }
+                else {
+                  res.render('user', {
+                    user: users[0],
+                    statusLinks: getStatusLinks(req, ['profile']),
+                    reviewViews,
+                    target: reviewID,
+                    confirmInvitation:
+                      'Are you sure you want to delete this review?',
+                    editUserClass: 'hidden',
+                    confirmClass: 'visible',
+                    confirmLinks: [
+                      [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
+                      [`/users/${reqUserID}`, 'Cancel']
+                    ]
+                  })
+                }
+              })
+            }
+          })
+        }
       }
     })
   }

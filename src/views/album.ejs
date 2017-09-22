@@ -12,7 +12,7 @@
           = reviewView.author_id === userID ? 'visible' : 'invisible'
       %>
         <div class="<%= reviewClass %>">
-          <p class="detail minor"><%= reviewView.submission_date %><span class="session <%= editReviewClass %>"><button type="button"><a href="/reviews/<%= reviewView.review_id %>/delete">🗑</a></button></span></p>
+          <p class="detail minor"><%= reviewView.submission_date %><span class="session <%= editReviewClass %>"><button type="button"><a href="/albums/<%= album.id %>/reviews/<%= reviewView.review_id %>/delete">🗑</a></button></span></p>
           <p class="detail">“<%= reviewView.review %>”</p>
           <p class="detail offset">by <a href="/users/<%= reviewView.author_id %>"><%= reviewView.author_name %></a></p>
         </div>

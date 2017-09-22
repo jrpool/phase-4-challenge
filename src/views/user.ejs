@@ -16,7 +16,7 @@
           const reviewClass = reviewView.id === target ? 'doomed' : 'normal'
       %>
       <div class="<%= reviewClass %>">
-        <h5><a href="/albums/<%= reviewView.album_id %>"><%= reviewView.album_title %></a><span class="session <%= editUserClass %>"><button type="button"><a href="/reviews/<%= reviewView.id %>/delete">🗑</a></button></span></h5>
+        <h5><a href="/albums/<%= reviewView.album_id %>"><%= reviewView.album_title %></a><span class="session <%= editUserClass %>"><button type="button"><a href="/users/<%= user.id %>/reviews/<%= reviewView.id %>/delete">🗑</a></button></span></h5>
         <p class="detail minor"><%= reviewView.submission_date %></p>
         <p class="detail"><%= reviewView.review %></p>
       </div>

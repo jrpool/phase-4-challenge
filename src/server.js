@@ -35,7 +35,7 @@ const messages = {
   otherwise: 'Something was wrong with the inputs.'
 }
 
-const getUserID = req => {
+const getSessionUserID = req => {
   if (req.session && req.session.user) {
     return req.session.user.id
   }
@@ -56,7 +56,7 @@ const getLink = (hidable, linkKey, id) => {
 }
 
 const getStatusLinks = (req, hidables) => {
-  const userID = getUserID(req);
+  const userID = getSessionUserID(req);
   if (userID) {
     return [
       getLink(hidables.includes('profile'), 'profile', userID),
@@ -141,9 +141,11 @@ app.get('/albums/:albumID(\\d+)', (req, res) => {
         else {
           res.render(
             'album', {
+              userID: getSessionUserID(req),
               album: albums[0],
               reviewViews,
-              addReviewClass: getUserID(req) ? 'visible' : 'invisible',
+              target: '',
+              addReviewClass: getSessionUserID(req) ? 'visible' : 'invisible',
               statusLinks: getStatusLinks(req, [])
             }
           )
@@ -163,7 +165,7 @@ app.get('/albums/new', (req, res) => {
 })
 
 app.get('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
-  if (!getUserID(req)) {
+  if (!getSessionUserID(req)) {
     res.redirect('/sign-in');
   }
   else {
@@ -202,7 +204,7 @@ app.get('/users', (req, res) => {
 
 app.get('/users/:userID(\\d+)', (req, res) => {
   const shownUserID = Number.parseInt(req.params.userID, 10)
-  const ownUserID = getUserID(req)
+  const ownUserID = getSessionUserID(req)
   const isOwnProfile = shownUserID === ownUserID
   db.getUsersByID(shownUserID, (error, users) => {
     if (error) {
@@ -244,7 +246,7 @@ app.get('/users/:userID(\\d+)', (req, res) => {
 
 app.get('/users/:userID(\\d+)/update', (req, res) => {
   const shownUserID = Number.parseInt(req.params.userID, 10)
-  const ownUserID = getUserID(req)
+  const ownUserID = getSessionUserID(req)
   const isOwnProfile = shownUserID === ownUserID
   if (!isOwnProfile) {
     const error = {
@@ -272,7 +274,7 @@ app.get('/users/:userID(\\d+)/update', (req, res) => {
 })
 
 app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
-  const userID = getUserID(req)
+  const userID = getSessionUserID(req)
   if (!userID) {
     const error = {
       message: messages.signinRequired,
@@ -328,7 +330,7 @@ app.get('/reviews/:reviewID(\\d+)/delete', (req, res) => {
 })
 
 app.get('/reviews/:reviewID(\\d+)/delete/confirm', (req, res) => {
-  const userID = getUserID(req)
+  const userID = getSessionUserID(req)
   if (!userID) {
     const error = {
       message: messages.signinRequired,
@@ -424,7 +426,7 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/users/:userID(\\d+)/update', (req, res) => {
   const shownUserID = Number.parseInt(req.params.userID, 10)
-  const ownUserID = getUserID(req)
+  const ownUserID = getSessionUserID(req)
   const isOwnProfile = shownUserID === ownUserID
   if (!isOwnProfile) {
     const error = {
@@ -474,7 +476,7 @@ app.post('/users/:userID(\\d+)/update', (req, res) => {
 
 app.post('/albums/new', (req, res) => {
   const formData = req.body
-  const userID = getUserID(req)
+  const userID = getSessionUserID(req)
   if (!userID) {
     const error = {
       message: messages.signinRequired,
@@ -507,7 +509,7 @@ app.post('/albums/new', (req, res) => {
 
 app.post('/albums/:albumID(\\d+)/reviews/new', (req, res) => {
   const formData = req.body
-  const userID = getUserID(req)
+  const userID = getSessionUserID(req)
   if (!userID) {
     const error = {
       message: messages.signinRequired,

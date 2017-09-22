@@ -125,7 +125,6 @@ normal {
   height: auto;
   margin-right: 12px;
   white-space: nowrap;
-  /*line-height: 21px;*/
 }
 
 .superhead {
@@ -138,8 +137,4 @@ normal {
 .warning {
   color: red;
   font-weight: bold;
-}
-
-.whiteback {
-  background-color: white;
 }

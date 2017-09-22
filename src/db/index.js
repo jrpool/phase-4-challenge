@@ -34,7 +34,7 @@ function getReviewViews(countLimit, cb) {
 function getAlbumReviewViews(album, countLimit, cb) {
   const limitText = countLimit ? ` limit ${countLimit}` : ''
   _query(
-    `SELECT reviews.submission_date, reviews.review, users.id as author_id, users.name as author_name FROM albums, reviews, users WHERE albums.id = $1 AND reviews.album = albums.id AND users.id = reviews.author order by reviews.submission_date desc${limitText}`,
+    `SELECT reviews.id as review_id, reviews.submission_date, reviews.review, users.id as author_id, users.name as author_name FROM albums, reviews, users WHERE albums.id = $1 AND reviews.album = albums.id AND users.id = reviews.author order by reviews.submission_date desc${limitText}`,
     [album],
     cb
   )

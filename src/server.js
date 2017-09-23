@@ -71,6 +71,51 @@ const getStatusLinks = (req, hidables) => {
   }
 }
 
+const deleteReview = (req, res, stackTemplate, newPath) => {
+  const reviewIDString = req.params.reviewID
+  const reviewID = Number.parseInt(reviewIDString, 10)
+  const reqUserID = Number.parseInt(req.params.userID, 10)
+  const sessionUserID = getSessionUserID(req)
+  const stack = stackTemplate.replace(':reviewID', reviewIDString)
+  if (!sessionUserID) {
+    const error = {
+      message: messages.signinRequired,
+      stack
+    }
+    renderError(error, req, res)
+  }
+  else {
+    db.getAuthorID(reviewID, (error, result_rows) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else if (!result_rows.length) {
+        res.redirect('not-found')
+      }
+      else {
+        const authorID = result_rows[0].author;
+        if (authorID !== reqUserID || sessionUserID !== reqUserID) {
+          const error = {
+            message: messages.forbidden,
+            stack
+          }
+          renderError(error, req, res)
+        }
+        else {
+          db.deleteReview(reviewID, reqUserID, (error, result_rows) => {
+            if (error) {
+              renderError(error, req, res)
+            }
+            else {
+              res.redirect(newPath)
+            }
+          })
+        }
+      }
+    })
+  }
+}
+
 const renderError = (error, req, res) => {
   res.status(500).render(
     'error', {error, statusLinks: getStatusLinks(req, [])}
@@ -273,8 +318,79 @@ app.get('/users/:userID(\\d+)/update', (req, res) => {
   }
 })
 
+app.get('/albums/:albumID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
+  const reviewID = Number.parseInt(req.params.reviewID, 10);
+  const sessionUserID = getSessionUserID(req)
+  if (!sessionUserID) {
+    const error = {
+      message: messages.signinRequired,
+      stack: `/albums/${albumID}/reviews/${reviewID}/delete`
+    }
+    renderError(error, req, res)
+  }
+  else {
+    db.getAuthorID(reviewID, (error, result_rows) => {
+      if (error) {
+        renderError(error, req, res)
+      }
+      else {
+        const authorID = result_rows[0].author;
+        if (authorID !== sessionUserID) {
+          const error = {
+            message: messages.forbidden,
+            stack: `/albums/${albumsID}/reviews/${reviewID}/delete`
+          }
+          renderError(error, req, res)
+        }
+        else {
+          db.getUsersByID(sessionUserID, (error, users) => {
+            if (error) {
+              renderError(error, req, res)
+            }
+            else if (users.length) {
+              db.getAlbumsByID(albumID, (error, albums) => {
+                if (error) {
+                  renderError(error, req, res)
+                }
+                else if (albums.length) {
+                  db.getAlbumReviewViews(albumID, 0, (error, reviewViews) => {
+                    if (error) {
+                      renderError(error, req, res)
+                    }
+                    else {
+                      res.render('album', {
+                        userID: sessionUserID,
+                        album: albums[0],
+                        reviewViews,
+                        target: reviewID,
+                        editReviewClass: 'invisible',
+                        statusLinks: getStatusLinks(req, []),
+                        confirmInvitation:
+                          'Are you sure you want to delete this review?',
+                        confirmClass: 'visible',
+                        confirmLinks: [
+                          [
+                            `/albums/${albumID}/reviews/${reviewID}/delete/confirm`,
+                            'Confirm'
+                          ],
+                          [`/albums/${albumID}`, 'Cancel']
+                        ]
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+  }
+})
+
 app.get('/users/:userID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
-  const reqUserID = Number.parseInt(req.params.userID, 10);
+  const reqUserIDString = req.params.userID;
+  const reqUserID = Number.parseInt(reqUserIDString, 10);
   const reviewID = Number.parseInt(req.params.reviewID, 10);
   const sessionUserID = getSessionUserID(req)
   if (!sessionUserID) {
@@ -316,11 +432,14 @@ app.get('/users/:userID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
                     target: reviewID,
                     confirmInvitation:
                       'Are you sure you want to delete this review?',
-                    editUserClass: 'hidden',
+                    editUserClass: 'invisible',
                     confirmClass: 'visible',
                     confirmLinks: [
-                      [`/reviews/${reviewID}/delete/confirm`, 'Confirm'],
-                      [`/users/${reqUserID}`, 'Cancel']
+                      [
+                        `/users/${reqUserIDString}/reviews/${reviewID}/delete/confirm`,
+                        'Confirm'
+                      ],
+                      [`/users/${reqUserIDString}`, 'Cancel']
                     ]
                   })
                 }
@@ -333,26 +452,22 @@ app.get('/users/:userID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
   }
 })
 
-app.get('/reviews/:reviewID(\\d+)/delete/confirm', (req, res) => {
-  const userID = getSessionUserID(req)
-  if (!userID) {
-    const error = {
-      message: messages.signinRequired,
-      stack: '/reviews/:reviewID/delete/confirm'
-    }
-    renderError(error, req, res)
+app.get(
+  '/albums/:albumID/reviews/:reviewID(\\d+)/delete/confirm',
+  (req, res) => {
+    const albumID = req.params.albumID;
+    const stackTemplate
+      = `/albums/${albumID}/reviews/:reviewID/delete/confirm`
+    const newPath = `/albums/${albumID}`
+    deleteReview(req, res, stackTemplate, newPath)
   }
-  else {
-    const reviewID = req.params.reviewID
-    db.deleteReview(reviewID, userID, (error, result_rows) => {
-      if (error) {
-        renderError(error, req, res)
-      }
-      else {
-        res.redirect(`/users/${userID}`)
-      }
-    })
-  }
+)
+
+app.get('/users/:userID/reviews/:reviewID(\\d+)/delete/confirm', (req, res) => {
+  const userID = req.params.userID
+  const stackTemplate = '/users/${userID}/reviews/:reviewID/delete/confirm'
+  const newPath = `/users/${userID}`
+  deleteReview(req, res, stackTemplate, newPath)
 })
 
 app.get('/not-found', (req, res) => {

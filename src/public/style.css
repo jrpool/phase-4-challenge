@@ -63,10 +63,6 @@ body {
   max-width: 90px;
 }
 
-.hidden {
-  visibility: hidden;
-}
-
 html {
   padding: 0;
   width: 100vw;

@@ -72,11 +72,7 @@ const getStatusLinks = (req, hidables) => {
 }
 
 const deleteReview = (req, res, stackTemplate, newPath) => {
-  const reviewIDString = req.params.reviewID
-  const reviewID = Number.parseInt(reviewIDString, 10)
-  const reqUserID = Number.parseInt(req.params.userID, 10)
   const sessionUserID = getSessionUserID(req)
-  const stack = stackTemplate.replace(':reviewID', reviewIDString)
   if (!sessionUserID) {
     const error = {
       message: messages.signinRequired,
@@ -85,6 +81,8 @@ const deleteReview = (req, res, stackTemplate, newPath) => {
     renderError(error, req, res)
   }
   else {
+    const reviewIDString = req.params.reviewID
+    const reviewID = Number.parseInt(reviewIDString, 10)
     db.getAuthorID(reviewID, (error, result_rows) => {
       if (error) {
         renderError(error, req, res)
@@ -93,6 +91,10 @@ const deleteReview = (req, res, stackTemplate, newPath) => {
         res.redirect('not-found')
       }
       else {
+        const reqUserIDString = req.params.userID
+        const reqUserID
+          = reqUserIDString ? Number.parseInt(reqUserIDString, 10) : sessionUserID
+        const stack = stackTemplate.replace(':reviewID', reviewIDString)
         const authorID = result_rows[0].author;
         if (authorID !== reqUserID || sessionUserID !== reqUserID) {
           const error = {
@@ -321,6 +323,7 @@ app.get('/users/:userID(\\d+)/update', (req, res) => {
 app.get('/albums/:albumID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
   const reviewID = Number.parseInt(req.params.reviewID, 10);
   const sessionUserID = getSessionUserID(req)
+  const albumID = Number.parseInt(req.params.albumID, 10)
   if (!sessionUserID) {
     const error = {
       message: messages.signinRequired,
@@ -338,7 +341,7 @@ app.get('/albums/:albumID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
         if (authorID !== sessionUserID) {
           const error = {
             message: messages.forbidden,
-            stack: `/albums/${albumsID}/reviews/${reviewID}/delete`
+            stack: `/albums/${albumID}/reviews/${reviewID}/delete`
           }
           renderError(error, req, res)
         }
@@ -364,6 +367,7 @@ app.get('/albums/:albumID(\\d+)/reviews/:reviewID(\\d+)/delete', (req, res) => {
                         reviewViews,
                         target: reviewID,
                         editReviewClass: 'invisible',
+                        addReviewClass: 'invisible',
                         statusLinks: getStatusLinks(req, []),
                         confirmInvitation:
                           'Are you sure you want to delete this review?',

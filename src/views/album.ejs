@@ -9,7 +9,7 @@
         const reviewClass
           = reviewView.review_id === target ? 'doomed' : 'normal'
         const editReviewClass
-          = reviewView.author_id === userID ? 'visible' : 'invisible'
+          = !target && reviewView.author_id === userID ? 'visible' : 'invisible'
       %>
         <div class="<%= reviewClass %>">
           <p class="detail minor"><%= reviewView.submission_date %><span class="session <%= editReviewClass %>"><button type="button"><a href="/albums/<%= album.id %>/reviews/<%= reviewView.review_id %>/delete">🗑</a></button></span></p>
